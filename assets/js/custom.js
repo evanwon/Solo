@@ -36,6 +36,12 @@
                 } catch (err) {
                     console.error('Failed to copy:', err);
                     anchor.setAttribute('aria-label', 'Failed to copy link');
+                    anchor.setAttribute('data-tooltip', 'Failed to copy link');
+
+                    setTimeout(() => {
+                        anchor.setAttribute('aria-label', TOOLTIP_TEXTS.default);
+                        anchor.setAttribute('data-tooltip', TOOLTIP_TEXTS.default);
+                    }, 2000);
                 }
             });
         });
