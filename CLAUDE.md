@@ -8,6 +8,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a personal fork of the [TryGhost/Solo](https://github.com/TryGhost/Solo) Ghost theme, used for evanw.com. The fork is maintained as a long-running branch with additive customizations while staying mergeable with upstream.
 
+## Committing
+
+Don't wait to be asked to commit. When the work reaches a logical checkpoint, point it out and recommend committing — but always ask for confirmation before actually running the commit.
+
 ## Commands
 
 Upstream uses **pnpm** (pinned via `packageManager` in `package.json`). Activate it once with `corepack enable pnpm`.
@@ -33,7 +37,21 @@ Current customizations:
 
 ## Merging upstream
 
-The fork tracks `upstream` (TryGhost/Solo). Customizations bleed into a few upstream-tracked files (`post.hbs`, `screen.css`, `gulpfile.js`); after merging, rebuild with `pnpm build` and commit the regenerated `assets/built/`. Deploy to the AWS host by `git pull` there (built assets are committed, so no build tooling is needed on the host).
+The fork tracks `upstream` (TryGhost/Solo). Customizations bleed into a few upstream-tracked files (`post.hbs`, `screen.css`, `gulpfile.js`); after merging, rebuild with `pnpm build` and commit the regenerated `assets/built/`.
+
+`assets/built/*` is kept committed (aligned with upstream, whose download-zip distribution model requires it). To avoid hand-resolving conflicts in those minified files on every upstream merge, `.gitattributes` marks them `merge=ours` — git keeps our version on conflict and you regenerate them with `pnpm build` afterward. This needs a **one-time** local config:
+
+```bash
+git config merge.ours.driver true
+```
+
+## Deployment
+
+Deployment is automated via GitHub Actions — the AWS host is no longer part of the deploy path (do **not** `git pull` into the live theme folder; that caused recurring `ghost doctor` permission/ownership errors from the in-folder `.git/` and login-user file ownership).
+
+Workflow: merge upstream locally → `pnpm build` → commit → merge/push to `main`. `.github/workflows/deploy.yml` then runs `gscan`, builds, and uploads + activates the theme via the Ghost **Admin API** (`TryGhost/action-deploy-theme`), which extracts it as the `ghost` user so permissions are always correct. The theme is deployed under the name `solo-evanw` (the live theme), overriding the `package.json` name `solo`.
+
+Requires two GitHub repo secrets: `GHOST_ADMIN_API_URL` (base site URL) and `GHOST_ADMIN_API_KEY` (from the Ghost custom integration). Trigger a manual deploy from the Actions tab via `workflow_dispatch`.
 
 ## Architecture
 

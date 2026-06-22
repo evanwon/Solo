@@ -1,0 +1,47 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy theme
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
+
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version: 24
+
+      - run: pnpm install --no-frozen-lockfile
+
+      # Fail the deploy if the theme doesn't pass validation.
+      - run: pnpm exec gscan --fatal --verbose .
+
+      # The deploy action zips the working tree but does NOT build, so build first.
+      - run: pnpm exec gulp build
+
+      # Packages the working directory (not a prebuilt file: zip — theme-name is
+      # ignored with file:) and uploads + activates via the Ghost Admin API.
+      - name: Deploy to Ghost
+        uses: TryGhost/action-deploy-theme@57d2c493d3fc90d624bb9b906d29066c61bbbfe1 # v2
+        with:
+          api-url: ${{ secrets.GHOST_ADMIN_API_URL }}
+          api-key: ${{ secrets.GHOST_ADMIN_API_KEY }}
+          theme-name: solo-evanw
+          exclude: |
+            AGENTS.md
+            CLAUDE.md
+            dist
