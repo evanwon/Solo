@@ -2,3 +2,8 @@
 /CLAUDE.md export-ignore
 /pnpm-workspace.yaml export-ignore
 /.gitattributes export-ignore
+
+# Generated build output: on an upstream-merge conflict, keep our version
+# (then rebuild with `pnpm build` after merging). Requires a one-time local:
+#   git config merge.ours.driver true
+assets/built/** merge=ours
