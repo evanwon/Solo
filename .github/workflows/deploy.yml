@@ -27,7 +27,18 @@ jobs:
 
       - run: pnpm install --no-frozen-lockfile
 
-      # Fail the deploy if the theme doesn't pass validation.
+      # Stamp a unique, traceable version into the deployed theme so Ghost Admin
+      # shows which build is live. Format: <upstream major.minor>.<UTC YYYYMMDD>+<short sha>
+      # e.g. 1.0.20260623+a1b2c3d. CI-only — package.json is NOT committed with this,
+      # so it stays aligned with upstream (no merge conflicts on the version field).
+      - name: Stamp theme version
+        run: |
+          BASE=$(node -p "require('./package.json').version.split('+')[0].split('-')[0].split('.').slice(0,2).join('.')")
+          export VERSION="${BASE}.$(date -u +%Y%m%d)+$(git rev-parse --short HEAD)"
+          node -e 'const fs=require("fs");const p=require("./package.json");p.version=process.env.VERSION;fs.writeFileSync("package.json",JSON.stringify(p,null,2)+"\n");'
+          echo "Stamped theme version: $VERSION"
+
+      # Fail the deploy if the theme doesn't pass validation (also validates the stamped semver).
       - run: pnpm exec gscan --fatal --verbose .
 
       # The deploy action zips the working tree but does NOT build, so build first.
