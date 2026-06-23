@@ -44,6 +44,12 @@ jobs:
       # The deploy action zips the working tree but does NOT build, so build first.
       - run: pnpm exec gulp build
 
+      # Ghost's file-permission check only accepts 644/664. Strip stray executable
+      # bits before zipping — some committed images carry them, and gulp re-applies
+      # one to assets/built/main.min.js during the build above.
+      - name: Normalize file permissions
+        run: find . -type f -not -path './.git/*' -not -path './node_modules/*' -exec chmod 644 {} +
+
       # Packages the working directory (not a prebuilt file: zip — theme-name is
       # ignored with file:) and uploads + activates via the Ghost Admin API.
       - name: Deploy to Ghost
