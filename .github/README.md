@@ -1,4 +1,4 @@
-# Solo — evanw.com fork
+# Solo (evanw.com fork)
 
 My personal fork of the [TryGhost/Solo](https://github.com/TryGhost/Solo) Ghost theme, running on [evanw.com](https://evanw.com). It tracks upstream and adds in a few additive customizations on top while staying (generally) mergeable.
 
