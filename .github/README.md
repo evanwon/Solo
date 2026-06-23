@@ -1,8 +1,8 @@
 # Solo — evanw.com fork
 
-A personal fork of the [TryGhost/Solo](https://github.com/TryGhost/Solo) Ghost theme, running on [evanw.com](https://evanw.com). It tracks upstream and layers a few additive customizations on top while staying mergeable.
+My personal fork of the [TryGhost/Solo](https://github.com/TryGhost/Solo) Ghost theme, running on [evanw.com](https://evanw.com). It tracks upstream and adds in a few additive customizations on top while staying (generally) mergeable.
 
-> The original theme's README is preserved unmodified at [`/README.md`](../README.md). This file only documents what's different in this fork.
+The original theme's README is preserved unmodified at [`/README.md`](../README.md). This file only documents what's different in this fork.
 
 ## What's customized
 
@@ -10,7 +10,7 @@ A personal fork of the [TryGhost/Solo](https://github.com/TryGhost/Solo) Ghost t
 - **Tighter paragraph/heading spacing** (`assets/css/custom.css`)
 - **All tags shown** in post metadata instead of just the primary tag (`post.hbs`)
 
-Customizations are deliberately isolated to `assets/css/custom.css` and `assets/js/custom.js` (plus a couple of upstream-tracked templates) to keep upstream merges clean.
+Customizations are primarily isolated to `assets/css/custom.css` and `assets/js/custom.js` (plus a couple of upstream-tracked templates) to keep upstream merges clean.
 
 ## How it's deployed
 
@@ -18,4 +18,4 @@ Pushing to `main` triggers a GitHub Action ([`.github/workflows/deploy.yml`](wor
 
 ## Contributing & issues
 
-This is a personal fork — I'm not taking feature requests here. For the original theme, see [TryGhost/Solo](https://github.com/TryGhost/Solo) and the canonical [TryGhost/Themes](https://github.com/TryGhost/Themes) monorepo. Fork maintenance notes (deploy, upstream-merge workflow) live in [`CLAUDE.md`](../CLAUDE.md).
+This is a personal fork but you're welcome to contribute if your changes are specific to my forked version. For the original theme, see [TryGhost/Solo](https://github.com/TryGhost/Solo) and the canonical [TryGhost/Themes](https://github.com/TryGhost/Themes) monorepo. Fork maintenance notes (deploy, upstream-merge workflow) live in [`CLAUDE.md`](../CLAUDE.md).
