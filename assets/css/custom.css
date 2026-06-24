@@ -9,8 +9,11 @@
 /* Homepage hero: match the gated subscribe pitch to the bio's "subtitle" size.
 /* Upstream sizes only the first .gh-about-secondary after the h1 (adjacency
 /* selector at screen.css `.gh-about-primary + .gh-about-secondary`), so our
-/* second paragraph would otherwise jump to the larger base size. */
-.gh-about-subscribe-pitch {
+/* second paragraph would otherwise fall back to the larger base size.
+/* The compound selector (.gh-about-secondary.gh-about-subscribe-pitch = 0,0,2,0)
+/* is REQUIRED to outrank the base `.gh-about-secondary` rule: custom.css is
+/* inlined before the theme's own rules, so a single-class tie loses on order. */
+.gh-about-secondary.gh-about-subscribe-pitch {
     max-width: 640px;
     font-size: clamp(2rem, 0.36vw + 1.83rem, 2.4rem);
     font-weight: 450;
