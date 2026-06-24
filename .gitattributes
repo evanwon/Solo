@@ -3,6 +3,23 @@
 /pnpm-workspace.yaml export-ignore
 /.gitattributes export-ignore
 
+# Normalize line endings to LF, in the repo and in the working tree, on every
+# platform. This overrides each machine's core.autocrlf, so builds on Windows
+# stop churning CRLF into generated files (assets/built/**, locales/**).
+* text=auto eol=lf
+
+# Binary assets: never apply line-ending conversion.
+*.woff2 binary
+*.woff  binary
+*.ttf   binary
+*.eot   binary
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.zip   binary
+
 # Generated build output: on an upstream-merge conflict, keep our version
 # (then rebuild with `pnpm build` after merging). Requires a one-time local:
 #   git config merge.ours.driver true
