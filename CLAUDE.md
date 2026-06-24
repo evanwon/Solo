@@ -27,13 +27,27 @@ pnpm zip          # Package theme to dist/solo.zip for upload
 
 **Keep customizations isolated to minimize merge conflicts with upstream:**
 
-- **CSS**: All custom styles go in `assets/css/custom.css` (imported last in `screen.css` so they win the cascade)
+- **CSS**: All custom styles go in `assets/css/custom.css`. Note: `screen.css` `@import`s it near the **top** (3rd line, before the theme's own rules), so custom rules are inlined *before* upstream rules in the built stylesheet — they do **not** automatically win the cascade. On a specificity tie, the later (upstream) rule wins. Give custom overrides higher specificity (e.g. a compound selector like `.gh-about-secondary.gh-about-subscribe-pitch`) rather than relying on source order. Verify with `pnpm verify:css` (see Verifying CSS below).
 - **JavaScript**: All custom scripts go in `assets/js/custom.js` (conditionally included by `gulpfile.js` if file exists)
 
 Current customizations:
 - Anchor links for headings with copy-to-clipboard functionality (CSS + JS)
 - Reduced paragraph/heading spacing (`custom.css`)
 - Show all tags in post metadata instead of just `primary_tag` (`post.hbs`)
+- Homepage hero: bio shown to everyone, subscribe CTA in a gated `subscribe_pitch` custom field (`index.hbs`, `custom.css`)
+
+### Verifying CSS changes
+
+A custom rule can be **present in the built stylesheet yet lose the cascade** — verify the *computed result*, not just that the rule exists. Two checks (run after editing CSS):
+
+```bash
+pnpm verify:css           # authoritative: builds, then renders the hero in headless Chromium
+                          # (Playwright) and asserts bio/pitch computed font-size match
+pnpm verify:css:cascade   # fast, no browser: resolves which font-size rule wins by
+                          # specificity + source order, straight from assets/built/screen.css
+```
+
+Scripts live in `scripts/`. Extend them when adding hero/about customizations. `pnpm verify:css` needs Playwright's Chromium (`pnpm exec playwright install chromium`, one-time).
 
 ## Merging upstream
 
