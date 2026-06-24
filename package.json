@@ -75,6 +75,11 @@
                 "default": "Subscribe below to receive my latest posts directly in your inbox",
                 "group": "homepage"
             },
+            "subscribe_pitch": {
+                "type": "text",
+                "default": "Subscribe below to receive my latest posts directly in your inbox",
+                "group": "homepage"
+            },
             "post_feed_layout": {
                 "type": "select",
                 "options": ["Classic", "Typographic", "Parallax"],
