@@ -29,26 +29,38 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><style>${css}</st
   </div></section>
 </body></html>`;
 
-const browser = await chromium.launch();
-const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
-await page.setContent(html, { waitUntil: 'load' });
+let browser;
+try {
+  browser = await chromium.launch();
+  const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  await page.setContent(html, { waitUntil: 'load' });
 
-const read = (sel) =>
-  page.$eval(sel, (el) => {
-    const cs = getComputedStyle(el);
-    return { fontSize: cs.fontSize, fontWeight: cs.fontWeight, maxWidth: cs.maxWidth };
-  });
-const bio = await read('#bio');
-const pitch = await read('#pitch');
-await browser.close();
+  const read = (sel) =>
+    page.$eval(sel, (el) => {
+      const cs = getComputedStyle(el);
+      return { fontSize: cs.fontSize, fontWeight: cs.fontWeight, maxWidth: cs.maxWidth };
+    });
+  const bio = await read('#bio');
+  const pitch = await read('#pitch');
 
-console.log('bio  :', bio);
-console.log('pitch:', pitch);
+  console.log('bio  :', bio);
+  console.log('pitch:', pitch);
 
-const ok = bio.fontSize === pitch.fontSize;
-console.log(
-  ok
-    ? `\n✅ PASS: hero bio and subscribe pitch render at the same font-size (${bio.fontSize}).`
-    : `\n❌ FAIL: bio ${bio.fontSize} vs pitch ${pitch.fontSize}.`
-);
-process.exit(ok ? 0 : 1);
+  const ok = bio.fontSize === pitch.fontSize;
+  console.log(
+    ok
+      ? `\n✅ PASS: hero bio and subscribe pitch render at the same font-size (${bio.fontSize}).`
+      : `\n❌ FAIL: bio ${bio.fontSize} vs pitch ${pitch.fontSize}.`
+  );
+  process.exitCode = ok ? 0 : 1;
+} catch (err) {
+  // Most likely first-run cause: the Chromium binary isn't installed yet.
+  if (/Executable doesn't exist|playwright install/i.test(err.message)) {
+    console.error("\n❌ Chromium isn't installed. Run: pnpm exec playwright install chromium");
+  } else {
+    console.error('\n❌ verify-hero-styles failed:', err.message);
+  }
+  process.exitCode = 1;
+} finally {
+  await browser?.close();
+}

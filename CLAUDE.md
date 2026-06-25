@@ -43,8 +43,8 @@ A custom rule can be **present in the built stylesheet yet lose the cascade** â€
 ```bash
 pnpm verify:css           # authoritative: builds, then renders the hero in headless Chromium
                           # (Playwright) and asserts bio/pitch computed font-size match
-pnpm verify:css:cascade   # fast, no browser: resolves which font-size rule wins by
-                          # specificity + source order, straight from assets/built/screen.css
+pnpm verify:css:cascade   # fast (no browser): builds, then resolves which font-size rule
+                          # wins by specificity + source order from assets/built/screen.css
 ```
 
 Scripts live in `scripts/`. Extend them when adding hero/about customizations. `pnpm verify:css` needs Playwright's Chromium (`pnpm exec playwright install chromium`, one-time).

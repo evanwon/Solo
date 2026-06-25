@@ -110,7 +110,7 @@
         "test": "gscan .",
         "zip": "gulp zip",
         "verify:css": "gulp build && node scripts/verify-hero-styles.mjs",
-        "verify:css:cascade": "node scripts/check-cascade.mjs"
+        "verify:css:cascade": "gulp build && node scripts/check-cascade.mjs"
     },
     "packageManager": "pnpm@11.8.0",
     "devDependencies": {
