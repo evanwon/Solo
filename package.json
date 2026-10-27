@@ -128,7 +128,7 @@
         "gulp-zip": "5.1.0",
         "ordered-read-streams": "2.0.0",
         "playwright": "^1.61.0",
-        "postcss": "8.5.15",
+        "postcss": "8.5.23",
         "postcss-easy-import": "4.0.0",
         "pump": "3.0.4"
     }
