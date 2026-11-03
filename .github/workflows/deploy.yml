@@ -9,9 +9,12 @@ on:
 permissions:
   contents: read
 
+# Two jobs so the Ghost Admin API key never shares a runner with third-party code. `build` runs pnpm install and gulp
+# (hundreds of npm packages, any of which could tamper with later steps in its job) and holds no secrets. `deploy` runs
+# only the pinned Ghost action, and gets the key from the `production` environment, which only `main` can deploy to.
 jobs:
-  deploy:
-    name: Deploy theme
+  build:
+    name: Build theme
     runs-on: ubuntu-26.04
 
     steps:
@@ -44,11 +47,34 @@ jobs:
       # The deploy action zips the working tree but does NOT build, so build first.
       - run: pnpm exec gulp build
 
+      # The built tree, minus node_modules. Hidden files (.git, .github) are left out by default; the theme needs none.
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: theme
+          path: |
+            .
+            !node_modules/**
+          if-no-files-found: error
+          retention-days: 1
+
+  deploy:
+    name: Deploy theme
+    needs: build
+    runs-on: ubuntu-26.04
+    environment:
+      name: production
+      url: https://evanw.com
+
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: theme
+
       # Ghost's file-permission check only accepts 644/664. Strip stray executable
-      # bits before zipping — some committed images carry them, and gulp re-applies
-      # one to assets/built/main.min.js during the build above.
+      # bits before zipping — some committed images carry them, and gulp sets
+      # one on assets/built/main.min.js during the build.
       - name: Normalize file permissions
-        run: find . -type f -not -path './.git/*' -not -path './node_modules/*' -exec chmod 644 {} +
+        run: find . -type f -exec chmod 644 {} +
 
       # Packages the working directory (not a prebuilt file: zip — theme-name is
       # ignored with file:) and uploads + activates via the Ghost Admin API.
