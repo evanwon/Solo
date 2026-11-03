@@ -1,0 +1,4 @@
+# Paths whose Dependabot PRs wait for a person (see .github/workflows/dependabot-automerge.yml).
+# Direct dependencies come from upstream merges, which keep package.json matching TryGhost/Solo; a Dependabot
+# bump there is a line that differs from upstream and conflicts at the next merge. Lockfile-only fixes still merge.
+^package\.json$
