@@ -53,6 +53,8 @@ Scripts live in `scripts/`. Extend them when adding hero/about customizations. `
 
 The fork tracks `upstream` (TryGhost/Solo). Customizations bleed into a few upstream-tracked files (`post.hbs`, `screen.css`, `gulpfile.js`); after merging, rebuild with `pnpm build` and commit the regenerated `assets/built/`.
 
+Unlike upstream, the fork commits `pnpm-lock.yaml`, and CI installs with `--frozen-lockfile`: the deploy job holds the Ghost Admin API key, so it installs exactly the versions that were tested, never whatever was published that hour. After a merge that changes `package.json`, run `pnpm install --config.minimum-release-age=10080` (no version younger than 7 days) and commit the lockfile with it.
+
 `assets/built/*` is kept committed (aligned with upstream, whose download-zip distribution model requires it). To avoid hand-resolving conflicts in those minified files on every upstream merge, `.gitattributes` marks them `merge=ours` — git keeps our version on conflict and you regenerate them with `pnpm build` afterward. This needs a **one-time** local config:
 
 ```bash
@@ -66,6 +68,8 @@ Deployment is automated via GitHub Actions — the AWS host is no longer part of
 Workflow: merge upstream locally → `pnpm build` → commit → merge/push to `main`. `.github/workflows/deploy.yml` then runs `gscan`, builds, and uploads + activates the theme via the Ghost **Admin API** (`TryGhost/action-deploy-theme`), which extracts it as the `ghost` user so permissions are always correct. The theme is deployed under the name `solo-evanw` (the live theme), overriding the `package.json` name `solo`.
 
 Requires two GitHub repo secrets: `GHOST_ADMIN_API_URL` (base site URL) and `GHOST_ADMIN_API_KEY` (from the Ghost custom integration). Trigger a manual deploy from the Actions tab via `workflow_dispatch`.
+
+Dependabot PRs merge themselves daily (`.github/workflows/dependabot-automerge.yml`, whose header says when). That merge starts no workflow, so it deploys with the next push; the dependencies are build tools, so the live theme doesn't change until then.
 
 ## Architecture
 
