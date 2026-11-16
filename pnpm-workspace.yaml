@@ -7,3 +7,8 @@ allowBuilds:
   # Optional dtrace bindings for bunyan (a gscan dependency); not needed to
   # build, test, or zip the theme.
   dtrace-provider: false
+overrides:
+  # Fork-only: archiver 8 (via gscan) asks for readdir-glob 3, whose minimatch 10
+  # has a Dependabot alert (#18). readdir-glob 4 differs only in requiring
+  # minimatch 11 and Node 20. Drop this once archiver takes readdir-glob 4.
+  archiver>readdir-glob: ^4.0.0
